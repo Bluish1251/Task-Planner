@@ -1,0 +1,52 @@
+function getTasks() {
+    fetch('/tasks')
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(tasks) {
+            var list = document.getElementById('taskList');
+            list.innerHTML = '';
+            for (var i = 0; i < tasks.length; i++) {
+                var task = tasks[i];
+                var item = document.createElement('li');
+                item.innerHTML = '<strong>' + task.title + '</strong> — ' + task.description +
+                    ' <button onclick="removeTask(' + task.id + ')">Delete</button>';
+                list.appendChild(item);
+            }
+        });
+}
+
+function removeTask(id) {
+    fetch('/tasks/' + id, { method: 'DELETE' })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            getTasks();
+        });
+}
+
+var form = document.getElementById('taskForm');
+form.addEventListener('submit', function(event) {
+    event.preventDefault();
+    var titleValue = document.getElementById('title').value;
+    var descriptionValue = document.getElementById('description').value;
+
+    fetch('/tasks', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            title: titleValue,
+            description: descriptionValue
+        })
+    }).then(function(response) {
+        return response.json();
+    }).then(function(data) {
+        form.reset();
+        getTasks();
+    });
+});
+
+getTasks();
