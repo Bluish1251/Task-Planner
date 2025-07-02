@@ -7,7 +7,13 @@ app = Flask(__name__)
 def setup_database():
     connection = sqlite3.connect('tasks.db')
     cursor = connection.cursor()
-    cursor.execute(''' create table if not exists tasks ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS tasks (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            description TEXT
+        )
+    ''')
     connection.commit()
     connection.close()
 
